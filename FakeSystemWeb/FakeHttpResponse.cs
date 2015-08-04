@@ -25,8 +25,10 @@ namespace FakeSystemWeb
 {
     using System;
     using System.Collections;
+    using System.Collections.Generic;
     using System.Collections.Specialized;
     using System.IO;
+    using System.Linq;
     using System.Text;
     using System.Threading;
     using System.Web;
@@ -38,6 +40,7 @@ namespace FakeSystemWeb
     /// </summary>
     public class FakeHttpResponse : HttpResponseBase
     {
+        private readonly List<string> cacheItemDependencies;
         private readonly HttpCookieCollection cookies;
         private readonly NameValueCollection headers;
 
@@ -48,6 +51,7 @@ namespace FakeSystemWeb
 
         public FakeHttpResponse()
         {
+            this.cacheItemDependencies = new List<string>();
             this.cookies = new HttpCookieCollection();
             this.headers = new NameValueCollection();
 
@@ -97,6 +101,17 @@ namespace FakeSystemWeb
         {
             get;
             set;
+        }
+
+        /// <summary>
+        /// Gets the cache item dependencies.
+        /// </summary>
+        public IReadOnlyCollection<string> CacheItemDependencies
+        {
+            get
+            {
+                return this.cacheItemDependencies;
+            }
         }
 
         /// <summary>
@@ -361,7 +376,7 @@ namespace FakeSystemWeb
         /// <param name="cacheKey">The key of the item that the cached response is dependent on.</param>
         public override void AddCacheItemDependency(string cacheKey)
         {
-            throw new NotImplementedException();
+            this.cacheItemDependencies.Add(cacheKey);
         }
 
         /// <summary>
@@ -370,7 +385,7 @@ namespace FakeSystemWeb
         /// <param name="cacheKeys">A collection that contains the keys of the items that the cached response is dependent on.</param>
         public override void AddCacheItemDependencies(ArrayList cacheKeys)
         {
-            throw new NotImplementedException();
+            this.cacheItemDependencies.AddRange(cacheKeys.Cast<string>());
         }
 
         /// <summary>
@@ -379,7 +394,7 @@ namespace FakeSystemWeb
         /// <param name="cacheKeys">An array that contains the keys of the items that the cached response is dependent on.</param>
         public override void AddCacheItemDependencies(string[] cacheKeys)
         {
-            throw new NotImplementedException();
+            this.cacheItemDependencies.AddRange(cacheKeys);
         }
 
         /// <summary>
