@@ -40,6 +40,7 @@ namespace FakeSystemWeb
     /// </summary>
     public class FakeHttpResponse : HttpResponseBase
     {
+        private readonly List<CacheDependency> cacheDependencies;
         private readonly List<string> cacheItemDependencies;
         private readonly HttpCookieCollection cookies;
         private readonly NameValueCollection headers;
@@ -51,6 +52,7 @@ namespace FakeSystemWeb
 
         public FakeHttpResponse()
         {
+            this.cacheDependencies = new List<CacheDependency>();
             this.cacheItemDependencies = new List<string>();
             this.cookies = new HttpCookieCollection();
             this.headers = new NameValueCollection();
@@ -201,6 +203,16 @@ namespace FakeSystemWeb
         }
 
         /// <summary>
+        /// Gets or sets the encoding for the header of the current response.
+        /// </summary>
+        /// <returns>Information about the encoding for the current header.</returns>
+        public override Encoding HeaderEncoding
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Gets the collection of response headers.
         /// </summary>
         /// <returns>The response headers.</returns>
@@ -210,16 +222,6 @@ namespace FakeSystemWeb
             {
                 return this.headers;
             }
-        }
-
-        /// <summary>
-        /// Gets or sets the encoding for the header of the current response.
-        /// </summary>
-        /// <returns>Information about the encoding for the current header.</returns>
-        public override Encoding HeaderEncoding
-        {
-            get;
-            set;
         }
 
         /// <summary>
@@ -371,12 +373,12 @@ namespace FakeSystemWeb
         }
 
         /// <summary>
-        /// Makes the validity of a cached response dependent on the specified item in the cache.
+        /// Associates cache dependencies with the response that enable the response to be invalidated if it is cached and if the specified dependencies change.
         /// </summary>
-        /// <param name="cacheKey">The key of the item that the cached response is dependent on.</param>
-        public override void AddCacheItemDependency(string cacheKey)
+        /// <param name="dependencies">A file, cache key, or <see cref="T:System.Web.Caching.CacheDependency" /> object to add to the list of application dependencies.</param>
+        public override void AddCacheDependency(params CacheDependency[] dependencies)
         {
-            this.cacheItemDependencies.Add(cacheKey);
+            this.cacheDependencies.AddRange(dependencies);
         }
 
         /// <summary>
@@ -398,21 +400,12 @@ namespace FakeSystemWeb
         }
 
         /// <summary>
-        /// Associates cache dependencies with the response that enable the response to be invalidated if it is cached and if the specified dependencies change.
+        /// Makes the validity of a cached response dependent on the specified item in the cache.
         /// </summary>
-        /// <param name="dependencies">A file, cache key, or <see cref="T:System.Web.Caching.CacheDependency" /> object to add to the list of application dependencies.</param>
-        public override void AddCacheDependency(params CacheDependency[] dependencies)
+        /// <param name="cacheKey">The key of the item that the cached response is dependent on.</param>
+        public override void AddCacheItemDependency(string cacheKey)
         {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Adds a single file name to the collection of file names on which the current response is dependent.
-        /// </summary>
-        /// <param name="filename">The name of the file to add.</param>
-        public override void AddFileDependency(string filename)
-        {
-            throw new NotImplementedException();
+            this.cacheItemDependencies.Add(cacheKey);
         }
 
         /// <summary>
@@ -429,6 +422,15 @@ namespace FakeSystemWeb
         /// </summary>
         /// <param name="filenames">An array of file names to add.</param>
         public override void AddFileDependencies(string[] filenames)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Adds a single file name to the collection of file names on which the current response is dependent.
+        /// </summary>
+        /// <param name="filename">The name of the file to add.</param>
+        public override void AddFileDependency(string filename)
         {
             throw new NotImplementedException();
         }
@@ -604,6 +606,25 @@ namespace FakeSystemWeb
         }
 
         /// <summary>
+        /// Performs a permanent redirect from the requested URL to the specified URL.
+        /// </summary>
+        /// <param name="url">The location to which the request is redirected.</param>
+        public override void RedirectPermanent(string url)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Performs a permanent redirect from the requested URL to the specified URL, and provides the option to complete the response.
+        /// </summary>
+        /// <param name="url">The location to which the request is redirected.</param>
+        /// <param name="endResponse">true to terminate the response; otherwise false. The default is false.</param>
+        public override void RedirectPermanent(string url, bool endResponse)
+        {
+            throw new NotImplementedException();
+        }
+        
+        /// <summary>
         /// Redirects the request to a new URL by using route parameter values.
         /// </summary>
         /// <param name="routeValues">The route parameter values.</param>
@@ -613,19 +634,19 @@ namespace FakeSystemWeb
         }
 
         /// <summary>
-        /// Redirects the request to a new URL by using a route name.
+        /// Redirects the request to a new URL by using route parameter values.
         /// </summary>
-        /// <param name="routeName">The name of the route.</param>
-        public override void RedirectToRoute(string routeName)
+        /// <param name="routeValues">The route parameter values.</param>
+        public override void RedirectToRoute(RouteValueDictionary routeValues)
         {
             throw new NotImplementedException();
         }
 
         /// <summary>
-        /// Redirects the request to a new URL by using route parameter values.
+        /// Redirects the request to a new URL by using a route name.
         /// </summary>
-        /// <param name="routeValues">The route parameter values.</param>
-        public override void RedirectToRoute(RouteValueDictionary routeValues)
+        /// <param name="routeName">The name of the route.</param>
+        public override void RedirectToRoute(string routeName)
         {
             throw new NotImplementedException();
         }
@@ -660,15 +681,6 @@ namespace FakeSystemWeb
         }
 
         /// <summary>
-        /// Performs a permanent redirection from the requested URL to a new URL by using a route name.
-        /// </summary>
-        /// <param name="routeName">The name of the route.</param>
-        public override void RedirectToRoutePermanent(string routeName)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
         /// Performs a permanent redirection from the requested URL to a new URL by using route parameter values.
         /// </summary>
         /// <param name="routeValues">The route parameter values.</param>
@@ -677,6 +689,15 @@ namespace FakeSystemWeb
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Performs a permanent redirection from the requested URL to a new URL by using a route name.
+        /// </summary>
+        /// <param name="routeName">The name of the route.</param>
+        public override void RedirectToRoutePermanent(string routeName)
+        {
+            throw new NotImplementedException();
+        }
+        
         /// <summary>
         /// Performs a permanent redirection from the requested URL to a new URL by using the route parameter values and the name of the route that correspond to the new URL.
         /// </summary>
@@ -693,25 +714,6 @@ namespace FakeSystemWeb
         /// <param name="routeName">The name of the route.</param>
         /// <param name="routeValues">The route parameter values.</param>
         public override void RedirectToRoutePermanent(string routeName, RouteValueDictionary routeValues)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Performs a permanent redirect from the requested URL to the specified URL.
-        /// </summary>
-        /// <param name="url">The location to which the request is redirected.</param>
-        public override void RedirectPermanent(string url)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Performs a permanent redirect from the requested URL to the specified URL, and provides the option to complete the response.
-        /// </summary>
-        /// <param name="url">The location to which the request is redirected.</param>
-        /// <param name="endResponse">true to terminate the response; otherwise false. The default is false.</param>
-        public override void RedirectPermanent(string url, bool endResponse)
         {
             throw new NotImplementedException();
         }
@@ -736,12 +738,48 @@ namespace FakeSystemWeb
         }
 
         /// <summary>
+        /// Sets the application path modifier.
+        /// </summary>
+        /// <param name="appPathModifier">The application path modifier.</param>
+        public void SetAppPathModifier(Func<string, string> appPathModifier)
+        {
+            this.appPathModifier = appPathModifier;
+        }
+
+        /// <summary>
         /// Updates an existing cookie in the cookie collection.
         /// </summary>
         /// <param name="cookie">The cookie in the collection to be updated.</param>
         public override void SetCookie(HttpCookie cookie)
         {
             throw new NotImplementedException();
+        }
+        
+        /// <summary>
+        /// Sets a value that indicates whether the client is connected to the server.
+        /// </summary>
+        /// <param name="isClientConnected">if set to <c>true</c> the client is connected to the server.</param>
+        public void SetIsClientConnected(bool isClientConnected)
+        {
+            this.isClientConnected = isClientConnected;
+        }
+
+        /// <summary>
+        /// Sets the output stream.
+        /// </summary>
+        /// <param name="outputStream">The output stream.</param>
+        public void SetOutputStream(Stream outputStream)
+        {
+            this.outputStream = outputStream;
+        }
+
+        /// <summary>
+        /// Sets a value that indicates whether the connection supports asynchronous flush operation.
+        /// </summary>
+        /// <param name="supportsAsyncFlush">if set to <c>true</c> the connection supports asynchronous flush operation.</param>
+        public void SetSupportsAsyncFlush(bool supportsAsyncFlush)
+        {
+            this.supportsAsyncFlush = supportsAsyncFlush;
         }
 
         /// <summary>
@@ -774,17 +812,6 @@ namespace FakeSystemWeb
         }
 
         /// <summary>
-        /// Writes the specified array of characters to the HTTP response output stream.
-        /// </summary>
-        /// <param name="buffer">The character array to write.</param>
-        /// <param name="index">The position in the character array where writing starts.</param>
-        /// <param name="count">The number of characters to write, starting at <paramref name="index" />.</param>
-        public override void Write(char[] buffer, int index, int count)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
         /// Writes the specified object to the HTTP response stream.
         /// </summary>
         /// <param name="obj">The object to write to the HTTP output stream.</param>
@@ -802,6 +829,17 @@ namespace FakeSystemWeb
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Writes the specified array of characters to the HTTP response output stream.
+        /// </summary>
+        /// <param name="buffer">The character array to write.</param>
+        /// <param name="index">The position in the character array where writing starts.</param>
+        /// <param name="count">The number of characters to write, starting at <paramref name="index" />.</param>
+        public override void Write(char[] buffer, int index, int count)
+        {
+            throw new NotImplementedException();
+        }
+        
         /// <summary>
         /// Writes the contents of the specified file to the HTTP response output stream as a file block.
         /// </summary>
@@ -824,10 +862,10 @@ namespace FakeSystemWeb
         /// <summary>
         /// Writes the specified file to the HTTP response output stream.
         /// </summary>
-        /// <param name="filename">The name of the file to write to the HTTP output stream.</param>
+        /// <param name="fileHandle">The file handle of the file to write to the HTTP output stream.</param>
         /// <param name="offset">The position in the file where writing starts.</param>
         /// <param name="size">The number of bytes to write, starting at <paramref name="offset" />.</param>
-        public override void WriteFile(string filename, long offset, long size)
+        public override void WriteFile(IntPtr fileHandle, long offset, long size)
         {
             throw new NotImplementedException();
         }
@@ -835,10 +873,10 @@ namespace FakeSystemWeb
         /// <summary>
         /// Writes the specified file to the HTTP response output stream.
         /// </summary>
-        /// <param name="fileHandle">The file handle of the file to write to the HTTP output stream.</param>
+        /// <param name="filename">The name of the file to write to the HTTP output stream.</param>
         /// <param name="offset">The position in the file where writing starts.</param>
         /// <param name="size">The number of bytes to write, starting at <paramref name="offset" />.</param>
-        public override void WriteFile(IntPtr fileHandle, long offset, long size)
+        public override void WriteFile(string filename, long offset, long size)
         {
             throw new NotImplementedException();
         }
@@ -850,42 +888,6 @@ namespace FakeSystemWeb
         public override void WriteSubstitution(HttpResponseSubstitutionCallback callback)
         {
             throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Sets the application path modifier.
-        /// </summary>
-        /// <param name="appPathModifier">The application path modifier.</param>
-        public void SetAppPathModifier(Func<string, string> appPathModifier)
-        {
-            this.appPathModifier = appPathModifier;
-        }
-
-        /// <summary>
-        /// Sets a value that indicates whether the client is connected to the server.
-        /// </summary>
-        /// <param name="isClientConnected">if set to <c>true</c> the client is connected to the server.</param>
-        public void SetIsClientConnected(bool isClientConnected)
-        {
-            this.isClientConnected = isClientConnected;
-        }
-
-        /// <summary>
-        /// Sets the output stream.
-        /// </summary>
-        /// <param name="outputStream">The output stream.</param>
-        public void SetOutputStream(Stream outputStream)
-        {
-            this.outputStream = outputStream;
-        }
-
-        /// <summary>
-        /// Sets a value that indicates whether the connection supports asynchronous flush operation.
-        /// </summary>
-        /// <param name="supportsAsyncFlush">if set to <c>true</c> the connection supports asynchronous flush operation.</param>
-        public void SetSupportsAsyncFlush(bool supportsAsyncFlush)
-        {
-            this.supportsAsyncFlush = supportsAsyncFlush;
         }
     }
 }
