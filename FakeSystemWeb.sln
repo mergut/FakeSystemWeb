@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30501.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FakeSystemWeb", "FakeSystemWeb\FakeSystemWeb.csproj", "{F94FB131-CAFC-4A96-8636-9DD3AC5519CD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FakeSystemWeb.Tests", "FakeSystemWeb.Tests\FakeSystemWeb.Tests.csproj", "{2408C1EC-7D35-4DA9-B6AC-0F9A34D98315}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F94FB131-CAFC-4A96-8636-9DD3AC5519CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F94FB131-CAFC-4A96-8636-9DD3AC5519CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F94FB131-CAFC-4A96-8636-9DD3AC5519CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F94FB131-CAFC-4A96-8636-9DD3AC5519CD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2408C1EC-7D35-4DA9-B6AC-0F9A34D98315}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2408C1EC-7D35-4DA9-B6AC-0F9A34D98315}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2408C1EC-7D35-4DA9-B6AC-0F9A34D98315}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2408C1EC-7D35-4DA9-B6AC-0F9A34D98315}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
