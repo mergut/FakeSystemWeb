@@ -21,7 +21,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-using System;
 namespace FakeSystemWeb.Tests
 {
     using System;
@@ -36,12 +35,13 @@ namespace FakeSystemWeb.Tests
 
         public static void Argument(TestDelegate code, string message, string paramName)
         {
-            Assert.That(
-                code,
+            var constraint =
                 Throws.ArgumentException
                     .With.Message.StringStarting(message)
                     .And
-                    .With.Property("ParamName").EqualTo(paramName));
+                    .With.Property("ParamName").EqualTo(paramName);
+
+            Assert.That(code, constraint);
         }
     }
 }

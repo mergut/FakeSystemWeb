@@ -23,9 +23,9 @@
  */
 namespace FakeSystemWeb.Tests
 {
-    using NUnit.Framework;
     using System;
     using System.IO;
+    using NUnit.Framework;
     
     [TestFixture]
     public sealed class FakeHttpPostedFileTest
