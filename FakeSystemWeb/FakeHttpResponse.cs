@@ -43,9 +43,13 @@ namespace FakeSystemWeb
         private readonly List<CacheDependency> cacheDependencies;
         private readonly List<string> cacheItemDependencies;
         private readonly HttpCookieCollection cookies;
+        private readonly List<string> fileDependencies;
         private readonly NameValueCollection headers;
+        private readonly StringBuilder log;
 
         private Func<string, string> appPathModifier;
+        private HttpCachePolicyBase cache;
+        private CancellationToken clientDisconnectedToken;
         private bool isClientConnected;
         private Stream outputStream;
         private bool supportsAsyncFlush;
@@ -55,9 +59,12 @@ namespace FakeSystemWeb
             this.cacheDependencies = new List<CacheDependency>();
             this.cacheItemDependencies = new List<string>();
             this.cookies = new HttpCookieCollection();
+            this.fileDependencies = new List<string>();
             this.headers = new NameValueCollection();
+            this.log = new StringBuilder();
 
             this.appPathModifier = p => p;
+            this.cache = new FakeHttpCachePolicy();
             this.isClientConnected = true;
 
             this.StatusCode = 200;
@@ -91,7 +98,7 @@ namespace FakeSystemWeb
         {
             get
             {
-                throw new NotImplementedException();
+                return this.cache;
             }
         }
 
@@ -103,6 +110,17 @@ namespace FakeSystemWeb
         {
             get;
             set;
+        }
+
+        /// <summary>
+        /// Gets the cache dependencies.
+        /// </summary>
+        public IReadOnlyCollection<CacheDependency> CacheDependencies
+        {
+            get
+            {
+                return this.cacheDependencies;
+            }
         }
 
         /// <summary>
@@ -133,7 +151,7 @@ namespace FakeSystemWeb
         {
             get
             {
-                throw new NotImplementedException();
+                return this.clientDisconnectedToken;
             }
         }
 
@@ -190,6 +208,17 @@ namespace FakeSystemWeb
         {
             get;
             set;
+        }
+
+        /// <summary>
+        /// Gets the file dependencies.
+        /// </summary>
+        public IReadOnlyCollection<string> FileDependencies
+        {
+            get
+            {
+                return this.fileDependencies;
+            }
         }
 
         /// <summary>
@@ -258,6 +287,17 @@ namespace FakeSystemWeb
         {
             get;
             private set;
+        }
+
+        /// <summary>
+        /// Gets the log.
+        /// </summary>
+        public string Log
+        {
+            get
+            {
+                return this.log.ToString();
+            }
         }
 
         /// <summary>
@@ -373,6 +413,18 @@ namespace FakeSystemWeb
         }
 
         /// <summary>
+        /// Gets a value indicating whether user-mode caching is disabled for the current response.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if user-mode caching is disabled for the current response; otherwise, <c>false</c>.
+        /// </value>
+        public bool UserCacheDisabled
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
         /// Associates cache dependencies with the response that enable the response to be invalidated if it is cached and if the specified dependencies change.
         /// </summary>
         /// <param name="dependencies">A file, cache key, or <see cref="T:System.Web.Caching.CacheDependency" /> object to add to the list of application dependencies.</param>
@@ -414,7 +466,7 @@ namespace FakeSystemWeb
         /// <param name="filenames">The names of the files to add.</param>
         public override void AddFileDependencies(ArrayList filenames)
         {
-            throw new NotImplementedException();
+            this.fileDependencies.AddRange(filenames.Cast<string>());
         }
 
         /// <summary>
@@ -423,7 +475,7 @@ namespace FakeSystemWeb
         /// <param name="filenames">An array of file names to add.</param>
         public override void AddFileDependencies(string[] filenames)
         {
-            throw new NotImplementedException();
+            this.fileDependencies.AddRange(filenames);
         }
 
         /// <summary>
@@ -432,7 +484,7 @@ namespace FakeSystemWeb
         /// <param name="filename">The name of the file to add.</param>
         public override void AddFileDependency(string filename)
         {
-            throw new NotImplementedException();
+            this.fileDependencies.Add(filename);
         }
 
         /// <summary>
@@ -451,7 +503,7 @@ namespace FakeSystemWeb
         /// <param name="cookie">The cookie to add to the response.</param>
         public override void AppendCookie(HttpCookie cookie)
         {
-            this.cookies.Set(cookie);
+            this.cookies.Add(cookie);
         }
 
         /// <summary>
@@ -461,7 +513,7 @@ namespace FakeSystemWeb
         /// <param name="value">The value of the header.</param>
         public override void AppendHeader(string name, string value)
         {
-            this.headers[name] = value;
+            this.headers.Add(name, value);
         }
 
         /// <summary>
@@ -471,7 +523,7 @@ namespace FakeSystemWeb
         /// <exception cref="System.NotSupportedException">This method is not supported.</exception>
         public override void AppendToLog(string param)
         {
-            throw new NotSupportedException();
+            this.log.AppendLine(param);
         }
 
         /// <summary>
@@ -509,7 +561,6 @@ namespace FakeSystemWeb
         /// </summary>
         public override void Clear()
         {
-            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -525,7 +576,19 @@ namespace FakeSystemWeb
         /// </summary>
         public override void ClearHeaders()
         {
-            throw new NotImplementedException();
+            this.cache = new FakeHttpCachePolicy();
+            this.CacheControl = null;
+            this.Charset = null;
+            this.ContentType = "text/html";
+            this.Cookies.Clear();
+            this.Expires = 0;
+            this.ExpiresAbsolute = DateTime.MinValue;
+            this.Headers.Clear();
+            this.log.Clear();
+            this.RedirectLocation = null;
+            this.StatusCode = 200;
+            this.StatusDescription = null;
+            this.SubStatusCode = 0;
         }
 
         /// <summary>
@@ -549,7 +612,7 @@ namespace FakeSystemWeb
         /// </summary>
         public override void DisableUserCache()
         {
-            throw new NotImplementedException();
+            this.UserCacheDisabled = true;
         }
 
         /// <summary>
@@ -583,7 +646,7 @@ namespace FakeSystemWeb
         /// <param name="value">The string to add to the PICS-Label header.</param>
         public override void Pics(string value)
         {
-            throw new NotImplementedException();
+            this.AppendHeader("PICS-Label", value);
         }
 
         /// <summary>
@@ -592,7 +655,7 @@ namespace FakeSystemWeb
         /// <param name="url">The target location.</param>
         public override void Redirect(string url)
         {
-            throw new NotImplementedException();
+            this.Redirect(url, true, false);
         }
 
         /// <summary>
@@ -602,7 +665,7 @@ namespace FakeSystemWeb
         /// <param name="endResponse">true to terminate the current process. </param>
         public override void Redirect(string url, bool endResponse)
         {
-            throw new NotImplementedException();
+            this.Redirect(url, endResponse, false);
         }
 
         /// <summary>
@@ -611,7 +674,7 @@ namespace FakeSystemWeb
         /// <param name="url">The location to which the request is redirected.</param>
         public override void RedirectPermanent(string url)
         {
-            throw new NotImplementedException();
+            this.Redirect(url, true, true);
         }
 
         /// <summary>
@@ -621,16 +684,16 @@ namespace FakeSystemWeb
         /// <param name="endResponse">true to terminate the response; otherwise false. The default is false.</param>
         public override void RedirectPermanent(string url, bool endResponse)
         {
-            throw new NotImplementedException();
+            this.Redirect(url, endResponse, true);
         }
-        
+
         /// <summary>
         /// Redirects the request to a new URL by using route parameter values.
         /// </summary>
         /// <param name="routeValues">The route parameter values.</param>
         public override void RedirectToRoute(object routeValues)
         {
-            throw new NotImplementedException();
+            this.RedirectToRoute(new RouteValueDictionary(routeValues));
         }
 
         /// <summary>
@@ -639,7 +702,7 @@ namespace FakeSystemWeb
         /// <param name="routeValues">The route parameter values.</param>
         public override void RedirectToRoute(RouteValueDictionary routeValues)
         {
-            throw new NotImplementedException();
+            this.RedirectToRoute(null, routeValues, false);
         }
 
         /// <summary>
@@ -648,7 +711,7 @@ namespace FakeSystemWeb
         /// <param name="routeName">The name of the route.</param>
         public override void RedirectToRoute(string routeName)
         {
-            throw new NotImplementedException();
+            this.RedirectToRoute(routeName, null, false);
         }
 
         /// <summary>
@@ -658,7 +721,7 @@ namespace FakeSystemWeb
         /// <param name="routeValues">The route parameter values.</param>
         public override void RedirectToRoute(string routeName, object routeValues)
         {
-            throw new NotImplementedException();
+            this.RedirectToRoute(routeName, new RouteValueDictionary(routeValues), false);
         }
 
         /// <summary>
@@ -668,7 +731,7 @@ namespace FakeSystemWeb
         /// <param name="routeValues">The route parameter values.</param>
         public override void RedirectToRoute(string routeName, RouteValueDictionary routeValues)
         {
-            throw new NotImplementedException();
+            this.RedirectToRoute(routeName, routeValues, false);
         }
 
         /// <summary>
@@ -677,7 +740,7 @@ namespace FakeSystemWeb
         /// <param name="routeValues">The route parameter values.</param>
         public override void RedirectToRoutePermanent(object routeValues)
         {
-            throw new NotImplementedException();
+            this.RedirectToRoutePermanent(new RouteValueDictionary(routeValues));
         }
 
         /// <summary>
@@ -686,7 +749,7 @@ namespace FakeSystemWeb
         /// <param name="routeValues">The route parameter values.</param>
         public override void RedirectToRoutePermanent(RouteValueDictionary routeValues)
         {
-            throw new NotImplementedException();
+            this.RedirectToRoute(null, routeValues, true);
         }
 
         /// <summary>
@@ -695,9 +758,9 @@ namespace FakeSystemWeb
         /// <param name="routeName">The name of the route.</param>
         public override void RedirectToRoutePermanent(string routeName)
         {
-            throw new NotImplementedException();
+            this.RedirectToRoute(routeName, null, true);
         }
-        
+
         /// <summary>
         /// Performs a permanent redirection from the requested URL to a new URL by using the route parameter values and the name of the route that correspond to the new URL.
         /// </summary>
@@ -705,7 +768,7 @@ namespace FakeSystemWeb
         /// <param name="routeValues">The route parameter values.</param>
         public override void RedirectToRoutePermanent(string routeName, object routeValues)
         {
-            throw new NotImplementedException();
+            this.RedirectToRoute(routeName, new RouteValueDictionary(routeValues), true);
         }
 
         /// <summary>
@@ -715,7 +778,7 @@ namespace FakeSystemWeb
         /// <param name="routeValues">The route parameter values.</param>
         public override void RedirectToRoutePermanent(string routeName, RouteValueDictionary routeValues)
         {
-            throw new NotImplementedException();
+            this.RedirectToRoute(routeName, routeValues, true);
         }
 
         /// <summary>
@@ -747,14 +810,32 @@ namespace FakeSystemWeb
         }
 
         /// <summary>
+        /// Sets the caching policy of the current response.
+        /// </summary>
+        /// <param name="cache">The caching policy.</param>
+        public void SetCache(HttpCachePolicyBase cache)
+        {
+            this.cache = cache;
+        }
+
+        /// <summary>
+        /// Sets a <see cref="T:System.Threading.CancellationToken" /> object that is tripped when the client disconnects.
+        /// </summary>
+        /// <param name="clientDisconnectedToken">The client disconnected token.</param>
+        public void SetClientDisconnectedToken(CancellationToken clientDisconnectedToken)
+        {
+            this.clientDisconnectedToken = clientDisconnectedToken;
+        }
+
+        /// <summary>
         /// Updates an existing cookie in the cookie collection.
         /// </summary>
         /// <param name="cookie">The cookie in the collection to be updated.</param>
         public override void SetCookie(HttpCookie cookie)
         {
-            throw new NotImplementedException();
+            this.cookies.Set(cookie);
         }
-        
+
         /// <summary>
         /// Sets a value that indicates whether the client is connected to the server.
         /// </summary>
@@ -839,7 +920,7 @@ namespace FakeSystemWeb
         {
             throw new NotImplementedException();
         }
-        
+
         /// <summary>
         /// Writes the contents of the specified file to the HTTP response output stream as a file block.
         /// </summary>
@@ -888,6 +969,29 @@ namespace FakeSystemWeb
         public override void WriteSubstitution(HttpResponseSubstitutionCallback callback)
         {
             throw new NotImplementedException();
+        }
+
+        protected internal virtual void Redirect(string url, bool endResponse, bool permanent)
+        {
+            if (url == null)
+            {
+                throw new ArgumentNullException("url");
+            }
+
+            url = this.ApplyAppPathModifier(url);
+            this.Clear();
+            this.StatusCode = permanent ? 301 : 302;
+            this.RedirectLocation = url;
+
+            if (endResponse)
+            {
+                this.End();
+            }
+        }
+
+        protected internal virtual void RedirectToRoute(string routeName, RouteValueDictionary routeValues, bool permanent)
+        {
+            throw new NotSupportedException();
         }
     }
 }

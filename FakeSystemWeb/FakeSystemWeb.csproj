@@ -39,6 +39,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FakeHttpBrowserCapabilities.cs" />
+    <Compile Include="FakeHttpCachePolicy.cs" />
     <Compile Include="FakeHttpContext.cs" />
     <Compile Include="FakeHttpFileCollection.cs" />
     <Compile Include="FakeHttpPostedFile.cs" />
