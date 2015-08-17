@@ -88,7 +88,7 @@ namespace FakeSystemWeb
             this.headers = new NameValueCollection();
             this.queryString = new NameValueCollection();
             this.serverVariables = new NameValueCollection();
-            
+
             this.acceptTypes = new string[0];
             this.applicationPath = "/";
             this.physicalApplicationPath = Environment.CurrentDirectory;
@@ -780,7 +780,7 @@ namespace FakeSystemWeb
         {
             this.userAgent = userAgent;
         }
-        
+
         /// <summary>
         /// Sets the IP host address of the client.
         /// </summary>
