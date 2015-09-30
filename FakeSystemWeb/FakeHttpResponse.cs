@@ -425,6 +425,16 @@ namespace FakeSystemWeb
         }
 
         /// <summary>
+        /// Gets or sets the HttpContext associated with this response.
+        /// </summary>
+        /// <returns>The HttpContext associated with this response.</returns>
+        protected internal FakeHttpContext Context
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// Associates cache dependencies with the response that enable the response to be invalidated if it is cached and if the specified dependencies change.
         /// </summary>
         /// <param name="dependencies">A file, cache key, or <see cref="T:System.Web.Caching.CacheDependency" /> object to add to the list of application dependencies.</param>
@@ -989,9 +999,21 @@ namespace FakeSystemWeb
             }
         }
 
+        /// <summary>
+        /// Redirects the request to a new URL by using route parameter values and a route name.
+        /// </summary>
+        /// <param name="routeName">The name of the route.</param>
+        /// <param name="routeValues">The route parameter values.</param>
+        /// <param name="permanent">true to perform a permanent redirection.</param>
         protected internal virtual void RedirectToRoute(string routeName, RouteValueDictionary routeValues, bool permanent)
         {
-            throw new NotSupportedException();
+            VirtualPathData virtualPath = RouteTable.Routes.GetVirtualPath(this.Context.Request.RequestContext, routeName, routeValues);
+            if (virtualPath == null)
+            {
+                throw new InvalidOperationException("No matching route found for RedirectToRoute.");
+            }
+
+            this.Redirect(virtualPath.VirtualPath, false, permanent);
         }
     }
 }
