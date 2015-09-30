@@ -671,8 +671,8 @@ namespace FakeSystemWeb
         /// <summary>
         /// Redirects a request to the specified URL and specifies whether execution of the current process should terminate.
         /// </summary>
-        /// <param name="url">The target location. </param>
-        /// <param name="endResponse">true to terminate the current process. </param>
+        /// <param name="url">The target location.</param>
+        /// <param name="endResponse">true to terminate the current process.</param>
         public override void Redirect(string url, bool endResponse)
         {
             this.Redirect(url, endResponse, false);
@@ -981,6 +981,12 @@ namespace FakeSystemWeb
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Redirects a request to the specified URL, specifies whether execution of the current process should terminate and provides the option to perform a permanent redirect.
+        /// </summary>
+        /// <param name="url">The target location.</param>
+        /// <param name="endResponse">true to terminate the current process.</param>
+        /// <param name="permanent">true to perform a permanent redirection.</param>
         protected internal virtual void Redirect(string url, bool endResponse, bool permanent)
         {
             if (url == null)
@@ -1000,7 +1006,7 @@ namespace FakeSystemWeb
         }
 
         /// <summary>
-        /// Redirects the request to a new URL by using route parameter values and a route name.
+        /// Redirects the request to a new URL by using route parameter values and a route name and provides the option to perform a permanent redirect.
         /// </summary>
         /// <param name="routeName">The name of the route.</param>
         /// <param name="routeValues">The route parameter values.</param>
