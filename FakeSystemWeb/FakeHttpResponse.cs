@@ -40,6 +40,7 @@ namespace FakeSystemWeb
     /// </summary>
     public class FakeHttpResponse : HttpResponseBase
     {
+        private readonly FakeHttpOutput httpOutput;
         private readonly List<CacheDependency> cacheDependencies;
         private readonly List<string> cacheItemDependencies;
         private readonly HttpCookieCollection cookies;
@@ -51,10 +52,13 @@ namespace FakeSystemWeb
         private HttpCachePolicyBase cache;
         private CancellationToken clientDisconnectedToken;
         private bool isClientConnected;
-        private Stream outputStream;
         private bool supportsAsyncFlush;
 
-        public FakeHttpResponse()
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FakeHttpResponse"/> class.
+        /// </summary>
+        /// <param name="httpOutput">The HTTP output object.</param>
+        public FakeHttpResponse(FakeHttpOutput httpOutput = null)
         {
             this.cacheDependencies = new List<CacheDependency>();
             this.cacheItemDependencies = new List<string>();
@@ -68,6 +72,16 @@ namespace FakeSystemWeb
             this.isClientConnected = true;
 
             this.StatusCode = 200;
+
+            if (httpOutput != null)
+            {
+                this.httpOutput = httpOutput;
+                this.Output = httpOutput.OutputWriter;
+            }
+            else
+            {
+                this.Output = TextWriter.Null;
+            }
         }
 
         /// <summary>
@@ -318,7 +332,12 @@ namespace FakeSystemWeb
         {
             get
             {
-                return this.outputStream;
+                if (this.httpOutput == null)
+                {
+                    throw new InvalidOperationException("OutputStream is only available when used with FakeHttpOutput.");
+                }
+
+                return this.httpOutput.OutputStream;
             }
         }
 
@@ -563,7 +582,7 @@ namespace FakeSystemWeb
         /// <param name="buffer">The binary characters to write to the current response.</param>
         public override void BinaryWrite(byte[] buffer)
         {
-            throw new NotImplementedException();
+            this.OutputStream.Write(buffer, 0, buffer.Length);
         }
 
         /// <summary>
@@ -571,6 +590,10 @@ namespace FakeSystemWeb
         /// </summary>
         public override void Clear()
         {
+            if (this.httpOutput != null)
+            {
+                this.httpOutput.Clear();
+            }
         }
 
         /// <summary>
@@ -606,7 +629,10 @@ namespace FakeSystemWeb
         /// </summary>
         public override void Close()
         {
-            throw new NotImplementedException();
+            if (this.httpOutput != null)
+            {
+                this.httpOutput.Close();
+            }
         }
 
         /// <summary>
@@ -630,7 +656,14 @@ namespace FakeSystemWeb
         /// </summary>
         public override void End()
         {
-            throw new NotImplementedException();
+            if (this.httpOutput != null)
+            {
+                this.httpOutput.Close();
+            }
+            else
+            {
+                this.Flush();
+            }
         }
 
         /// <summary>
@@ -647,7 +680,7 @@ namespace FakeSystemWeb
         /// </summary>
         public override void Flush()
         {
-            throw new NotImplementedException();
+            this.Output.Flush();
         }
 
         /// <summary>
@@ -856,15 +889,6 @@ namespace FakeSystemWeb
         }
 
         /// <summary>
-        /// Sets the output stream.
-        /// </summary>
-        /// <param name="outputStream">The output stream.</param>
-        public void SetOutputStream(Stream outputStream)
-        {
-            this.outputStream = outputStream;
-        }
-
-        /// <summary>
         /// Sets a value that indicates whether the connection supports asynchronous flush operation.
         /// </summary>
         /// <param name="supportsAsyncFlush">if set to <c>true</c> the connection supports asynchronous flush operation.</param>
@@ -899,7 +923,7 @@ namespace FakeSystemWeb
         /// <param name="ch">The character to write to the HTTP output stream.</param>
         public override void Write(char ch)
         {
-            throw new NotImplementedException();
+            this.Output.Write(ch);
         }
 
         /// <summary>
@@ -908,7 +932,7 @@ namespace FakeSystemWeb
         /// <param name="obj">The object to write to the HTTP output stream.</param>
         public override void Write(object obj)
         {
-            throw new NotImplementedException();
+            this.Output.Write(obj);
         }
 
         /// <summary>
@@ -917,7 +941,7 @@ namespace FakeSystemWeb
         /// <param name="s">The string to write to the HTTP output stream.</param>
         public override void Write(string s)
         {
-            throw new NotImplementedException();
+            this.Output.Write(s);
         }
 
         /// <summary>
@@ -928,7 +952,7 @@ namespace FakeSystemWeb
         /// <param name="count">The number of characters to write, starting at <paramref name="index" />.</param>
         public override void Write(char[] buffer, int index, int count)
         {
-            throw new NotImplementedException();
+            this.Output.Write(buffer, index, count);
         }
 
         /// <summary>

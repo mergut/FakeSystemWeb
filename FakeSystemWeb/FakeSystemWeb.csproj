@@ -42,6 +42,7 @@
     <Compile Include="FakeHttpCachePolicy.cs" />
     <Compile Include="FakeHttpContext.cs" />
     <Compile Include="FakeHttpFileCollection.cs" />
+    <Compile Include="FakeHttpOutput.cs" />
     <Compile Include="FakeHttpPostedFile.cs" />
     <Compile Include="FakeHttpRequest.cs" />
     <Compile Include="FakeHttpResponse.cs" />
