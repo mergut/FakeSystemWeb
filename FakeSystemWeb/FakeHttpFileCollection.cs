@@ -34,14 +34,14 @@ namespace FakeSystemWeb
     /// </summary>
     public class FakeHttpFileCollection : HttpFileCollectionBase
     {
-        private readonly HttpPostedFileBaseCollection collection;
+        private readonly NameObjectCollection<HttpPostedFileBase> collection;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FakeHttpFileCollection"/> class.
         /// </summary>
         public FakeHttpFileCollection()
         {
-            this.collection = new HttpPostedFileBaseCollection();
+            this.collection = new NameObjectCollection<HttpPostedFileBase>(StringComparer.InvariantCultureIgnoreCase);
         }
 
         /// <summary>
@@ -254,39 +254,6 @@ namespace FakeSystemWeb
         public override void OnDeserialization(object sender)
         {
             this.collection.OnDeserialization(sender);
-        }
-
-        private sealed class HttpPostedFileBaseCollection : NameObjectCollectionBase
-        {
-            public HttpPostedFileBaseCollection()
-                : base(StringComparer.InvariantCultureIgnoreCase)
-            {
-            }
-
-            public void Add(string name, HttpPostedFileBase file)
-            {
-                this.BaseAdd(name, file);
-            }
-
-            public HttpPostedFileBase Get(int index)
-            {
-                return (HttpPostedFileBase)this.BaseGet(index);
-            }
-
-            public HttpPostedFileBase Get(string name)
-            {
-                return (HttpPostedFileBase)this.BaseGet(name);
-            }
-
-            public string GetKey(int index)
-            {
-                return this.BaseGetKey(index);
-            }
-
-            public string[] GetAllKeys()
-            {
-                return this.BaseGetAllKeys();
-            }
         }
     }
 }
