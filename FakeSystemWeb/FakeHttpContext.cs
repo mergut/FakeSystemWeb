@@ -42,17 +42,28 @@ namespace FakeSystemWeb
     /// </summary>
     public class FakeHttpContext : HttpContextBase
     {
+        private readonly FakeHttpApplicationState applicationState;
         private readonly List<Exception> errors;
         private readonly Stack<IHttpHandler> handlerStack;
         private readonly Hashtable items;
+        private readonly PageInstrumentationService pageInstrumentation;
         private readonly FakeHttpRequest request;
         private readonly FakeHttpResponse response;
         private readonly FakeHttpSessionState session;
         private readonly DateTime timestampUtc;
 
         private IHttpHandler currentHandler;
+        private RequestNotification currentNotification;
         private IHttpHandler handler;
+        private bool isCustomErrorEnabled;
+        private bool isDebuggingEnabled;
+        private bool isPostNotification;
+        private bool isWebSocketRequest;
+        private bool isWebSocketRequestUpgrading;
+        private ProfileBase profile;
         private IHttpHandler remapHandler;
+        private string webSocketNegotiatedProtocol;
+        private IList<string> webSocketNegotiatedProtocols;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FakeHttpContext"/> class.
@@ -83,10 +94,14 @@ namespace FakeSystemWeb
 
             this.response.Context = this;
 
+            this.applicationState = new FakeHttpApplicationState();
+            this.currentNotification = RequestNotification.BeginRequest;
             this.errors = new List<Exception>();
             this.handlerStack = new Stack<IHttpHandler>();
             this.items = new Hashtable();
+            this.pageInstrumentation = new PageInstrumentationService();
             this.timestampUtc = DateTime.UtcNow;
+
             this.ThreadAbortOnTimeout = true;
         }
 
@@ -129,7 +144,7 @@ namespace FakeSystemWeb
         {
             get
             {
-                throw new NotImplementedException();
+                return this.applicationState;
             }
         }
 
@@ -189,7 +204,7 @@ namespace FakeSystemWeb
         {
             get
             {
-                throw new NotImplementedException();
+                return this.currentNotification;
             }
         }
 
@@ -238,7 +253,7 @@ namespace FakeSystemWeb
         {
             get
             {
-                throw new NotImplementedException();
+                return this.isCustomErrorEnabled;
             }
         }
 
@@ -249,19 +264,18 @@ namespace FakeSystemWeb
         {
             get
             {
-                throw new NotImplementedException();
+                return this.isDebuggingEnabled;
             }
         }
 
         /// <summary>
-        /// a value that indicates whether an <see cref="System.Web.HttpApplication" /> event 
-        /// has finished processing.
+        /// Gets a value that indicates whether an <see cref="System.Web.HttpApplication" /> event has finished processing.
         /// </summary>
         public override bool IsPostNotification
         {
             get
             {
-                throw new NotImplementedException();
+                return this.isPostNotification;
             }
         }
 
@@ -273,7 +287,7 @@ namespace FakeSystemWeb
         {
             get
             {
-                throw new NotImplementedException();
+                return this.isWebSocketRequest;
             }
         }
 
@@ -285,7 +299,7 @@ namespace FakeSystemWeb
         {
             get
             {
-                throw new NotImplementedException();
+                return this.isWebSocketRequestUpgrading;
             }
         }
 
@@ -308,7 +322,7 @@ namespace FakeSystemWeb
         {
             get
             {
-                throw new NotImplementedException();
+                return this.pageInstrumentation;
             }
         }
 
@@ -339,7 +353,7 @@ namespace FakeSystemWeb
         {
             get
             {
-                throw new NotImplementedException();
+                return this.profile;
             }
         }
 
@@ -457,7 +471,7 @@ namespace FakeSystemWeb
         {
             get
             {
-                throw new NotImplementedException();
+                throw new NotSupportedException();
             }
         }
 
@@ -478,7 +492,7 @@ namespace FakeSystemWeb
         {
             get
             {
-                throw new NotImplementedException();
+                return this.webSocketNegotiatedProtocol;
             }
         }
 
@@ -489,7 +503,7 @@ namespace FakeSystemWeb
         {
             get
             {
-                throw new NotImplementedException();
+                return this.webSocketNegotiatedProtocols;
             }
         }
 
@@ -613,7 +627,7 @@ namespace FakeSystemWeb
         /// <returns>The specified section, or <c>null</c> if the section does not exist.</returns>
         public override object GetSection(string sectionName)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         /// <summary>
@@ -623,7 +637,7 @@ namespace FakeSystemWeb
         /// <returns>The current service type, or <c>null</c> if no service is found.</returns>
         public override object GetService(Type serviceType)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         /// <summary>
@@ -680,12 +694,96 @@ namespace FakeSystemWeb
         }
 
         /// <summary>
+        /// Sets a <see cref="System.Web.RequestNotification" /> value that indicates 
+        /// the <see cref="System.Web.HttpApplication" /> event that is currently processing.
+        /// </summary>
+        /// <param name="currentNotification">The current notification.</param>
+        public void SetCurrentNotification(RequestNotification currentNotification)
+        {
+            this.currentNotification = currentNotification;
+        }
+
+        /// <summary>
+        /// Sets a value that indicates whether custom errors are enabled.
+        /// </summary>
+        /// <param name="isCustomErrorEnabled">if set to <c>true</c> custom errors are enabled.</param>
+        public void SetIsCustomErrorEnabled(bool isCustomErrorEnabled)
+        {
+            this.isCustomErrorEnabled = isCustomErrorEnabled;
+        }
+
+        /// <summary>
+        /// Sets a value that indicates whether the current HTTP request is in debug mode.
+        /// </summary>
+        /// <param name="isDebuggingEnabled">if set to <c>true</c> the current HTTP request is in debug mode.</param>
+        public void SetIsDebuggingEnabled(bool isDebuggingEnabled)
+        {
+            this.isDebuggingEnabled = isDebuggingEnabled;
+        }
+
+        /// <summary>
+        /// Sets a value that indicates whether an <see cref="System.Web.HttpApplication" /> event has finished processing.
+        /// </summary>
+        /// <param name="isPostNotification">if set to <c>true</c> the event has finished processing.</param>
+        public void SetIsPostNotification(bool isPostNotification)
+        {
+            this.isPostNotification = isPostNotification;
+        }
+
+        /// <summary>
+        /// Sets a value that indicates whether the request is an <see cref="System.Web.WebSockets.AspNetWebSocket"/> connection request.
+        /// </summary>
+        /// <param name="isWebSocketRequest">if set to <c>true</c> the request is an WebSocket request.</param>
+        public void SetIsWebSocketRequest(bool isWebSocketRequest)
+        {
+            this.isWebSocketRequest = isWebSocketRequest;
+        }
+
+        /// <summary>
+        /// Sets a value that indicates whether the connection is upgrading from an HTTP connection 
+        /// to an <see cref="System.Web.WebSockets.AspNetWebSocket"/> connection.
+        /// </summary>
+        /// <param name="isWebSocketRequestUpgrading">if set to <c>true</c> the connection is upgrading.</param>
+        public void SetIsWebSocketRequestUpgrading(bool isWebSocketRequestUpgrading)
+        {
+            this.isWebSocketRequestUpgrading = isWebSocketRequestUpgrading;
+        }
+
+        /// <summary>
+        /// Sets the <see cref="System.Web.Profile.ProfileBase" /> object for the current user profile.
+        /// </summary>
+        /// <param name="profile">The profile.</param>
+        public void SetProfile(ProfileBase profile)
+        {
+            this.profile = profile;
+        }
+
+        /// <summary>
         /// Sets the type of session state behavior that is required to support an HTTP request.
         /// </summary>
         /// <param name="sessionStateBehavior">One of the enumeration values that specifies what type of session state behavior is required.</param>
         public override void SetSessionStateBehavior(SessionStateBehavior sessionStateBehavior)
         {
             this.SessionStateBehavior = sessionStateBehavior;
+        }
+
+        /// <summary>
+        /// Sets the negotiated protocol that was sent from the server to the client 
+        /// for an <see cref="System.Web.WebSockets.AspNetWebSocket"/> connection.
+        /// </summary>
+        /// <param name="webSocketNegotiatedProtocol">The web socket negotiated protocol.</param>
+        public void SetWebSocketNegotiatedProtocol(string webSocketNegotiatedProtocol)
+        {
+            this.webSocketNegotiatedProtocol = webSocketNegotiatedProtocol;
+        }
+
+        /// <summary>
+        /// Sets the ordered list of protocols that were requested by the client.
+        /// </summary>
+        /// <param name="webSocketNegotiatedProtocols">The web socket negotiated protocols.</param>
+        public void SetWebSocketNegotiatedProtocols(IList<string> webSocketNegotiatedProtocols)
+        {
+            this.webSocketNegotiatedProtocols = webSocketNegotiatedProtocols;
         }
 
         /// <summary>

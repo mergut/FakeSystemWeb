@@ -38,6 +38,7 @@
     <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FakeHttpApplicationState.cs" />
     <Compile Include="FakeHttpBrowserCapabilities.cs" />
     <Compile Include="FakeHttpCachePolicy.cs" />
     <Compile Include="FakeHttpContext.cs" />
