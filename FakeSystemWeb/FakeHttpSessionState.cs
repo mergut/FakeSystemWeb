@@ -49,13 +49,13 @@ namespace FakeSystemWeb
         /// </summary>
         public FakeHttpSessionState()
         {
-            this.sessionItems = new NameObjectCollection<object>(StringComparer.InvariantCulture);
+            this.sessionItems = new NameObjectCollection<object>(StringComparer.InvariantCultureIgnoreCase);
+            this.staticObjects = new HttpStaticObjectsCollectionWrapper(new HttpStaticObjectsCollection());
 
             this.cookieMode = HttpCookieMode.UseCookies;
             this.isNewSession = true;
             this.mode = SessionStateMode.InProc;
             this.sessionID = Guid.NewGuid().ToString("N");
-            this.staticObjects = new HttpStaticObjectsCollectionWrapper(new HttpStaticObjectsCollection());
         }
 
         /// <summary>
