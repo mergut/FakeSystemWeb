@@ -549,7 +549,6 @@ namespace FakeSystemWeb
         /// Adds custom log information to the Internet Information Services (IIS) log file.
         /// </summary>
         /// <param name="param">The text to add to the log file.</param>
-        /// <exception cref="System.NotSupportedException">This method is not supported.</exception>
         public override void AppendToLog(string param)
         {
             this.log.AppendLine(param);
