@@ -47,6 +47,7 @@
     <Compile Include="FakeHttpPostedFile.cs" />
     <Compile Include="FakeHttpRequest.cs" />
     <Compile Include="FakeHttpResponse.cs" />
+    <Compile Include="FakeHttpServerUtility.cs" />
     <Compile Include="FakeHttpSessionState.cs" />
     <Compile Include="FakeUnvalidatedRequestValues.cs" />
     <Compile Include="NameObjectCollection`1.cs" />

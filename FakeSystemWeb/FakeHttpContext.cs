@@ -49,6 +49,7 @@ namespace FakeSystemWeb
         private readonly PageInstrumentationService pageInstrumentation;
         private readonly FakeHttpRequest request;
         private readonly FakeHttpResponse response;
+        private readonly FakeHttpServerUtility server;
         private readonly FakeHttpSessionState session;
         private readonly DateTime timestampUtc;
 
@@ -100,6 +101,7 @@ namespace FakeSystemWeb
             this.handlerStack = new Stack<IHttpHandler>();
             this.items = new Hashtable();
             this.pageInstrumentation = new PageInstrumentationService();
+            this.server = new FakeHttpServerUtility(this);
             this.timestampUtc = DateTime.UtcNow;
 
             this.ThreadAbortOnTimeout = true;
@@ -399,7 +401,7 @@ namespace FakeSystemWeb
         {
             get
             {
-                throw new NotImplementedException();
+                return this.server;
             }
         }
 
