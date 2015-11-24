@@ -71,6 +71,14 @@ namespace FakeSystemWeb
         /// <summary>
         /// Initializes a new instance of the <see cref="FakeHttpRequest"/> class.
         /// </summary>
+        public FakeHttpRequest()
+            : this(new Uri("http://localhost/"))
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FakeHttpRequest"/> class.
+        /// </summary>
         /// <param name="url">The URL.</param>
         /// <param name="httpMethod">The HTTP method.</param>
         public FakeHttpRequest(Uri url, string httpMethod = "GET")

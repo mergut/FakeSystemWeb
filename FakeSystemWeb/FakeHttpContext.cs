@@ -69,6 +69,14 @@ namespace FakeSystemWeb
         /// <summary>
         /// Initializes a new instance of the <see cref="FakeHttpContext"/> class.
         /// </summary>
+        public FakeHttpContext()
+            : this(new FakeHttpRequest(), new FakeHttpResponse(), new FakeHttpSessionState())
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FakeHttpContext"/> class.
+        /// </summary>
         /// <param name="request">The request.</param>
         /// <param name="response">The response.</param>
         /// <param name="session">The session.</param>
