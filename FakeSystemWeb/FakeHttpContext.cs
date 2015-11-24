@@ -93,6 +93,7 @@ namespace FakeSystemWeb
             this.response = response;
             this.session = session;
 
+            this.request.Context = this;
             this.response.Context = this;
 
             this.applicationState = new FakeHttpApplicationState();

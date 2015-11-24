@@ -329,12 +329,11 @@ namespace FakeSystemWeb
         /// <summary>
         /// Gets a value that indicates whether the request has been authenticated.
         /// </summary>
-        /// <exception cref="System.NotSupportedException">This property is not supported.</exception>
         public override bool IsAuthenticated
         {
             get
             {
-                throw new NotSupportedException();
+                return this.Context.User != null && this.Context.User.Identity != null && this.Context.User.Identity.IsAuthenticated;
             }
         }
 
@@ -363,12 +362,16 @@ namespace FakeSystemWeb
         /// <summary>
         /// Gets the <see cref="T:System.Security.Principal.WindowsIdentity" /> type for the current user.
         /// </summary>
-        /// <exception cref="System.NotSupportedException">This property is not supported.</exception>
         public override WindowsIdentity LogonUserIdentity
         {
             get
             {
-                throw new NotSupportedException();
+                if (this.Context.User != null)
+                {
+                    return this.Context.User.Identity as WindowsIdentity;
+                }
+
+                return null;
             }
         }
 
@@ -593,6 +596,16 @@ namespace FakeSystemWeb
             {
                 return this.userLanguages;
             }
+        }
+
+        /// <summary>
+        /// Gets or sets the HttpContext associated with this request.
+        /// </summary>
+        /// <returns>The HttpContext associated with this request.</returns>
+        protected internal FakeHttpContext Context
+        {
+            get;
+            set;
         }
 
         /// <summary>
