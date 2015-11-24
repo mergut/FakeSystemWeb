@@ -121,7 +121,11 @@ namespace FakeSystemWeb
         /// <param name="filename">The name of the file to save.</param>
         public override void SaveAs(string filename)
         {
-            throw new NotImplementedException();
+            using (var fileStream = File.Create(filename))
+            {
+                this.inputStream.CopyTo(fileStream);
+                fileStream.Flush();
+            }
         }
     }
 }
