@@ -834,6 +834,16 @@ namespace FakeSystemWeb
             this.userLanguages = userLanguages;
         }
 
+        /// <summary>
+        /// Causes validation to occur for the collections that are accessed through the
+        ///  <see cref="System.Web.HttpRequestBase.Cookies"/>,
+        ///  <see cref="System.Web.HttpRequestBase.Form"/>,
+        ///  <see cref="System.Web.HttpRequestBase.QueryString"/> properties.
+        /// </summary>
+        public override void ValidateInput()
+        {
+        }
+
         private NameValueCollection GetParams()
         {
             var combined = new NameValueCollection();

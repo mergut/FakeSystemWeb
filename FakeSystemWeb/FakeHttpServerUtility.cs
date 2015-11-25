@@ -81,6 +81,7 @@ namespace FakeSystemWeb
         /// </summary>
         public override void ClearError()
         {
+            this.context.ClearError();
         }
 
         /// <summary>

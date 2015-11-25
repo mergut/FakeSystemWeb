@@ -78,6 +78,25 @@ namespace FakeSystemWeb
         /// Initializes a new instance of the <see cref="FakeHttpContext"/> class.
         /// </summary>
         /// <param name="request">The request.</param>
+        public FakeHttpContext(FakeHttpRequest request)
+            : this(request, new FakeHttpResponse(), new FakeHttpSessionState())
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FakeHttpContext"/> class.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <param name="response">The response.</param>
+        public FakeHttpContext(FakeHttpRequest request, FakeHttpResponse response)
+            : this(request, response, new FakeHttpSessionState())
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FakeHttpContext"/> class.
+        /// </summary>
+        /// <param name="request">The request.</param>
         /// <param name="response">The response.</param>
         /// <param name="session">The session.</param>
         public FakeHttpContext(FakeHttpRequest request, FakeHttpResponse response, FakeHttpSessionState session)
@@ -648,7 +667,7 @@ namespace FakeSystemWeb
         /// <returns>The current service type, or <c>null</c> if no service is found.</returns>
         public override object GetService(Type serviceType)
         {
-            throw new NotSupportedException();
+            return null;
         }
 
         /// <summary>
