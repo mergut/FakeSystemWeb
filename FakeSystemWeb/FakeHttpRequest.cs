@@ -99,7 +99,7 @@ namespace FakeSystemWeb
             this.cookies = new HttpCookieCollection();
             this.form = new NameValueCollection();
             this.headers = new NameValueCollection();
-            this.queryString = new NameValueCollection();
+            this.queryString = HttpUtility.ParseQueryString(url.Query);
             this.serverVariables = new NameValueCollection();
 
             this.acceptTypes = new string[0];
