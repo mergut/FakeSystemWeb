@@ -98,6 +98,8 @@ namespace FakeSystemWeb
         /// <returns>A <see cref="byte[]"/> containing the output content bytes.</returns>
         public byte[] GetContentBytes()
         {
+            this.writer.Flush();
+
             return this.stream.ToArray();
         }
 
