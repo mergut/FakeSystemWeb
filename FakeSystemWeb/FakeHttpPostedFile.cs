@@ -111,7 +111,7 @@ namespace FakeSystemWeb
         {
             get
             {
-                return this.InputStream;
+                return this.inputStream;
             }
         }
 

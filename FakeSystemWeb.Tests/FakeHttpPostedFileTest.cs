@@ -25,8 +25,9 @@ namespace FakeSystemWeb.Tests
 {
     using System;
     using System.IO;
+    using System.Text;
     using NUnit.Framework;
-    
+
     [TestFixture]
     public sealed class FakeHttpPostedFileTest
     {
@@ -35,6 +36,71 @@ namespace FakeSystemWeb.Tests
         {
             ExceptionAssert.ArgumentNull(() => new FakeHttpPostedFile(null, "unused", Stream.Null), "fileName");
             ExceptionAssert.ArgumentNull(() => new FakeHttpPostedFile(string.Empty, "unused", Stream.Null), "fileName");
+        }
+
+        [Test]
+        public void FakeHttpPostedFile_Constructor_WithNullOrEmptyContentTypeParameter_ThrowsArgumentNullException()
+        {
+            ExceptionAssert.ArgumentNull(() => new FakeHttpPostedFile("unused", null, Stream.Null), "contentType");
+            ExceptionAssert.ArgumentNull(() => new FakeHttpPostedFile("unused", string.Empty, Stream.Null), "contentType");
+        }
+
+        [Test]
+        public void FakeHttpPostedFile_Constructor_WithNullInputStreamParameter_ThrowsArgumentNullException()
+        {
+            ExceptionAssert.ArgumentNull(() => new FakeHttpPostedFile("unused", "unused", null), "inputStream");
+        }
+
+        [Test]
+        public void FakeHttpPostedFile_ContentLength_Default_ReturnsStreamLength()
+        {
+            var postedFile = new FakeHttpPostedFile("unused", "unused", Stream.Null);
+
+            Assert.That(postedFile.ContentLength, Is.EqualTo(0));
+        }
+
+        [Test]
+        public void FakeHttpPostedFile_ContentType_Default_ReturnsContentType()
+        {
+            var postedFile = new FakeHttpPostedFile("unused", "text/plain", Stream.Null);
+
+            Assert.That(postedFile.ContentType, Is.EqualTo("text/plain"));
+        }
+
+        [Test]
+        public void FakeHttpPostedFile_FileName_Default_ReturnsFileName()
+        {
+            var postedFile = new FakeHttpPostedFile("test-filename", "unused", Stream.Null);
+
+            Assert.That(postedFile.FileName, Is.EqualTo("test-filename"));
+        }
+
+        [Test]
+        public void FakeHttpPostedFile_InputStream_Default_ReturnsInputStream()
+        {
+            var stream = Stream.Null;
+            var postedFile = new FakeHttpPostedFile("unused", "unused", stream);
+
+            Assert.That(postedFile.InputStream, Is.EqualTo(stream));
+        }
+
+        [Test]
+        public void FakeHttpPostedFile_SaveAs_Default_SavesStreamContentsInFile()
+        {
+            string content = "Test Content";
+            string tempFilePath = Path.GetTempFileName();
+
+            using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(content)))
+            {
+                var postedFile = new FakeHttpPostedFile("test.txt", "text/plain", ms);
+
+                postedFile.SaveAs(tempFilePath);
+            }
+
+            string tempFileContent = File.ReadAllText(tempFilePath);
+            File.Delete(tempFilePath);
+
+            Assert.That(tempFileContent, Is.EqualTo(content));
         }
     }
 }
