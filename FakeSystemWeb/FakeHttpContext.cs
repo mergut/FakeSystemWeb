@@ -77,6 +77,15 @@ namespace FakeSystemWeb
         /// <summary>
         /// Initializes a new instance of the <see cref="FakeHttpContext"/> class.
         /// </summary>
+        /// <param name="url">The URL.</param>
+        public FakeHttpContext(Uri url)
+            : this(new FakeHttpRequest(url))
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FakeHttpContext"/> class.
+        /// </summary>
         /// <param name="request">The request.</param>
         public FakeHttpContext(FakeHttpRequest request)
             : this(request, new FakeHttpResponse(), new FakeHttpSessionState())

@@ -72,7 +72,16 @@ namespace FakeSystemWeb
         /// Initializes a new instance of the <see cref="FakeHttpRequest"/> class.
         /// </summary>
         public FakeHttpRequest()
-            : this(new Uri("http://localhost/"))
+            : this(new Uri("http://127.0.0.1/"))
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FakeHttpRequest"/> class.
+        /// </summary>
+        /// <param name="url">The URL.</param>
+        public FakeHttpRequest(Uri url)
+            : this(url, "GET")
         {
         }
 
@@ -81,11 +90,16 @@ namespace FakeSystemWeb
         /// </summary>
         /// <param name="url">The URL.</param>
         /// <param name="httpMethod">The HTTP method.</param>
-        public FakeHttpRequest(Uri url, string httpMethod = "GET")
+        public FakeHttpRequest(Uri url, string httpMethod)
         {
             if (url == null)
             {
                 throw new ArgumentNullException("url");
+            }
+
+            if (httpMethod == null)
+            {
+                throw new ArgumentNullException("httpMethod");
             }
 
             if (!url.IsAbsoluteUri)
