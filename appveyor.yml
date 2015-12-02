@@ -3,7 +3,7 @@
 version: 1.0.0.{build}
 
 init:
-  - ps: appveyor.init.ps1
+  - ps: .\appveyor.init.ps1
 
 cache:
   - packages -> **\packages.config
