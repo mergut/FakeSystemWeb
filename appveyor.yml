@@ -14,6 +14,8 @@ before_build:
   - ps: $env:Build_IsPreRelease=(-not [String]::IsNullOrEmpty($env:GitVersion_PreReleaseTag)).ToString().ToLower()
   - nuget restore
 
+configuration: Release
+
 build:
   publish_nuget: false
   verbosity: minimal
@@ -21,6 +23,16 @@ build:
 after_build:
   - 7z a "FakeSystemWeb_%GitVersion_NuGetVersion%.zip" ".\FakeSystemWeb\bin\%CONFIGURATION%\*"
   - nuget pack FakeSystemWeb\FakeSystemWeb.csproj -version "%GitVersion_NuGetVersion%" -prop "target=%CONFIGURATION%"
+
+before_test:
+  - nuget install opencover -SolutionDirectory . -ExcludeVersion -NonInteractive
+#  - nuget install coveralls.io -SolutionDirectory . -ExcludeVersion -NonInteractive
+
+test_script:
+  - packages\OpenCover\tools\OpenCover.Console.exe -register:user -output:coverage.xml "-target:C:\Tools\NUnit\bin\nunit-console.exe" "-targetargs:FakeSystemWeb.Tests\bin\%CONFIGURATION%\FakeSystemWeb.Tests.dll /noshadow /domain:Single" -skipautoprops -hideskipped:All -filter:"+[*]* -[*Tests]*"
+
+after_test:
+  - appveyor PushArtifact coverage.xml
 
 artifacts:
   - path: '*.nupkg'
