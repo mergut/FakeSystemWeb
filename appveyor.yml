@@ -25,7 +25,7 @@ after_build:
   - nuget pack FakeSystemWeb\FakeSystemWeb.csproj -version "%GitVersion_NuGetVersion%" -prop "target=%CONFIGURATION%"
 
 before_test:
-  - nuget install opencover -SolutionDirectory . -ExcludeVersion -NonInteractive
+  - nuget install opencover -OutputDirectory packages -ExcludeVersion -NonInteractive
 #  - nuget install coveralls.io -SolutionDirectory . -ExcludeVersion -NonInteractive
 
 test_script:
