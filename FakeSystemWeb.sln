@@ -9,8 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FakeSystemWeb.Tests", "Fake
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8D89B1DB-47EE-496C-9148-804FA202697B}"
 	ProjectSection(SolutionItems) = preProject
-		appveyor.init.ps1 = appveyor.init.ps1
-		appveyor.yml = appveyor.yml
 		default.licenseheader = default.licenseheader
 		Settings.StyleCop = Settings.StyleCop
 	EndProjectSection
