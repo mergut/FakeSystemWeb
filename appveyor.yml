@@ -10,6 +10,8 @@ cache:
 
 before_build:
   - gitversion /output buildserver /updateAssemblyInfo FakeSystemWeb\Properties\AssemblyInfo.cs
+  - 7a a "FakeSystemWeb_%GitVersion_NuGetVersion%_src.zip" ".\*" -x!.git -x!packages
+  - ps: $env:Build_IsPreRelease=(-not [String]::IsNullOrEmpty($env:GitVersion_PreReleaseTag)).ToString().ToLower()
   - nuget restore
 
 build:
@@ -21,8 +23,8 @@ after_build:
   - nuget pack FakeSystemWeb\FakeSystemWeb.csproj -version "%GitVersion_NuGetVersion%" -prop "target=%CONFIGURATION%"
 
 artifacts:
-  - path: FakeSystemWeb.$(GitVersion_NuGetVersion).nupkg
-  - path: FakeSystemWeb_$(GitVersion_NuGetVersion).zip
+  - path: '*.nupkg'
+  - path: '*.zip'
 
 nuget:
   account_feed: true
@@ -34,5 +36,16 @@ deploy:
     api_key:
       secure: BIYmTD2m0YuxsKt7KwAOyQ==
     skip_symbols: true
+    on:
+      APPVEYOR_REPO_TAG: true
+
+  - provider: GitHub
+    auth_token:
+      secure: BIYmTD2m0YuxsKt7KwAOyQ==
+    tag: '$(APPVEYOR_REPO_TAG_NAME)'
+    release: '$(GitVersion_NuGetVersion)'
+    description: ''
+    artifact: /.*\.zip/
+    prerelease: '$(Build_IsPreRelease)'
     on:
       APPVEYOR_REPO_TAG: true
