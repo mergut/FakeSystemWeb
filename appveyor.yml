@@ -2,9 +2,6 @@
 
 version: "{build}"
 
-init:
-  - ps: Get-ChildItem 'env:'
-
 assembly_info:
   patch: false
 
@@ -15,7 +12,6 @@ before_build:
   - ps: gitversion /l console /output buildserver /updateAssemblyInfo FakeSystemWeb\Properties\AssemblyInfo.cs
   - 7z a "FakeSystemWeb_%GitVersion_NuGetVersion%_src.zip" ".\*" -x!.git -x!packages
   - ps: $env:Build_IsPreRelease=(-not [String]::IsNullOrEmpty($env:GitVersion_PreReleaseTag)).ToString().ToLower()
-  - ps: Get-ChildItem 'env:'
   - nuget restore
 
 build:
@@ -53,6 +49,3 @@ deploy:
     prerelease: '$(Build_IsPreRelease)'
     on:
       APPVEYOR_REPO_TAG: true
-
-on_finish:
-#  - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
