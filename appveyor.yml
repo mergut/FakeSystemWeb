@@ -12,7 +12,7 @@ cache:
   - packages -> **\packages.config
 
 before_build:
-  - gitversion /l console /output buildserver /updateAssemblyInfo FakeSystemWeb\Properties\AssemblyInfo.cs
+  - ps: gitversion /l console /output buildserver /updateAssemblyInfo FakeSystemWeb\Properties\AssemblyInfo.cs
   - 7a a "FakeSystemWeb_%GitVersion_NuGetVersion%_src.zip" ".\*" -x!.git -x!packages
   - ps: $env:Build_IsPreRelease=(-not [String]::IsNullOrEmpty($env:GitVersion_PreReleaseTag)).ToString().ToLower()
   - ps: Get-ChildItem 'env:'
