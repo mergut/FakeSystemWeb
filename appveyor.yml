@@ -19,6 +19,7 @@ before_build:
 configuration: Release
 
 build:
+  project: FakeSystemWeb.sln
   publish_nuget: false
   verbosity: minimal
 
