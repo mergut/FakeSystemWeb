@@ -37,7 +37,7 @@ namespace FakeSystemWeb.Tests
         {
             var constraint =
                 Throws.ArgumentException
-                    .With.Message.StringStarting(message)
+                    .With.Message.StartsWith(message)
                     .And
                     .With.Property("ParamName").EqualTo(paramName);
 
