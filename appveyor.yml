@@ -31,7 +31,7 @@ before_test:
 #  - nuget install coveralls.io -SolutionDirectory . -ExcludeVersion -NonInteractive
 
 test_script:
-  - packages\OpenCover\tools\OpenCover.Console.exe -register:user -output:coverage.xml "-target:C:\Tools\NUnit3\bin\nunit3-console.exe" "-targetargs:FakeSystemWeb.Tests\bin\%CONFIGURATION%\FakeSystemWeb.Tests.dll" -skipautoprops -hideskipped:All -filter:"+[*]* -[*Tests]*"
+  - packages\OpenCover\tools\OpenCover.Console.exe -register:user -output:coverage.xml "-target:C:\Tools\NUnit3\bin\nunit3-console.exe" "-targetargs:FakeSystemWeb.Tests\bin\%CONFIGURATION%\FakeSystemWeb.Tests.dll --result:myresults.xml;format=AppVeyor" -skipautoprops -hideskipped:All -filter:"+[*]* -[*Tests]*"
 
 after_test:
   - appveyor PushArtifact coverage.xml
