@@ -1014,7 +1014,7 @@ namespace FakeSystemWeb
         {
             if (url == null)
             {
-                throw new ArgumentNullException("url");
+                throw new ArgumentNullException(nameof(url));
             }
 
             url = this.ApplyAppPathModifier(url);

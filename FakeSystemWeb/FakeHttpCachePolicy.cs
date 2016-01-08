@@ -267,7 +267,7 @@ namespace FakeSystemWeb
         {
             if (handler == null)
             {
-                throw new ArgumentNullException("handler");
+                throw new ArgumentNullException(nameof(handler));
             }
 
             this.validationCallbacks.Add(new Tuple<HttpCacheValidateHandler, object>(handler, data));
@@ -281,7 +281,7 @@ namespace FakeSystemWeb
         {
             if (extension == null)
             {
-                throw new ArgumentNullException("extension");
+                throw new ArgumentNullException(nameof(extension));
             }
 
             this.cacheExtensions.Add(extension);
@@ -314,7 +314,7 @@ namespace FakeSystemWeb
         {
             if (field == null)
             {
-                throw new ArgumentNullException("field");
+                throw new ArgumentNullException(nameof(field));
             }
 
             this.Cacheability = cacheability;
@@ -329,7 +329,7 @@ namespace FakeSystemWeb
         {
             if (etag == null)
             {
-                throw new ArgumentNullException("etag");
+                throw new ArgumentNullException(nameof(etag));
             }
 
             if (this.ETag != null)
@@ -392,7 +392,7 @@ namespace FakeSystemWeb
         {
             if (delta < TimeSpan.Zero)
             {
-                throw new ArgumentOutOfRangeException("delta");
+                throw new ArgumentOutOfRangeException(nameof(delta));
             }
 
             this.MaxAge = delta;
@@ -439,7 +439,7 @@ namespace FakeSystemWeb
         {
             if (delta < TimeSpan.Zero)
             {
-                throw new ArgumentOutOfRangeException("delta");
+                throw new ArgumentOutOfRangeException(nameof(delta));
             }
 
             this.ProxyMaxAge = delta;
@@ -480,7 +480,7 @@ namespace FakeSystemWeb
         {
             if (custom == null)
             {
-                throw new ArgumentNullException("custom");
+                throw new ArgumentNullException(nameof(custom));
             }
 
             if (this.VaryByCustom != null)

@@ -94,17 +94,17 @@ namespace FakeSystemWeb
         {
             if (url == null)
             {
-                throw new ArgumentNullException("url");
+                throw new ArgumentNullException(nameof(url));
             }
 
             if (httpMethod == null)
             {
-                throw new ArgumentNullException("httpMethod");
+                throw new ArgumentNullException(nameof(httpMethod));
             }
 
             if (!url.IsAbsoluteUri)
             {
-                throw new ArgumentException("The url must be absolute.", "url");
+                throw new ArgumentException("The url must be absolute.", nameof(url));
             }
 
             this.url = url;
@@ -680,12 +680,12 @@ namespace FakeSystemWeb
         {
             if (string.IsNullOrEmpty(virtualPath))
             {
-                throw new ArgumentNullException("virtualPath");
+                throw new ArgumentNullException(nameof(virtualPath));
             }
 
             if (!virtualPath.StartsWith("~/"))
             {
-                throw new ArgumentException("Invalid virtual path.", "virtualPath");
+                throw new ArgumentException("Invalid virtual path.", nameof(virtualPath));
             }
 
             return this.PhysicalApplicationPath + virtualPath.Substring(1).Replace('/', '\\');
