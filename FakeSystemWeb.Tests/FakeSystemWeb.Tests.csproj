@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="ExceptionAssert.cs" />
     <Compile Include="FakeHttpPostedFileTest.cs" />
+    <Compile Include="FakeHttpRequestTest.cs" />
     <Compile Include="NameObjectCollectionTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
