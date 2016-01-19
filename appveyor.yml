@@ -4,6 +4,10 @@ version: "{build}"
 
 os: Visual Studio 2015
 
+environment:
+  COVERALLS_REPO_TOKEN:
+    secure: ULQmvbjwZFF6ULJo9mklrDcablbRZTtYiFSDkjI2B0VNUntQDwBtPfC0YyN7OuLp
+
 assembly_info:
   patch: false
 
@@ -25,21 +29,22 @@ build:
 
 after_build:
   - 7z a "FakeSystemWeb_%GitVersion_NuGetVersion%.zip" ".\FakeSystemWeb\bin\%CONFIGURATION%\*"
-  - nuget pack FakeSystemWeb\FakeSystemWeb.csproj -version "%GitVersion_NuGetVersion%" -prop "target=%CONFIGURATION%"
+  - nuget pack FakeSystemWeb\FakeSystemWeb.csproj -version "%GitVersion_NuGetVersion%" -prop "target=%CONFIGURATION%" -symbols
 
 before_test:
   - nuget install opencover -OutputDirectory packages -ExcludeVersion -NonInteractive
-#  - nuget install coveralls.io -SolutionDirectory . -ExcludeVersion -NonInteractive
+  - nuget install coveralls.io -OutputDirectory packages -ExcludeVersion -NonInteractive
 
 test_script:
   - packages\OpenCover\tools\OpenCover.Console.exe -register:user -output:coverage.xml "-target:C:\Tools\NUnit3\bin\nunit3-console.exe" "-targetargs:FakeSystemWeb.Tests\bin\%CONFIGURATION%\FakeSystemWeb.Tests.dll --result:myresults.xml;format=AppVeyor" -skipautoprops -hideskipped:All -filter:"+[*]* -[*Tests]*"
 
 after_test:
-  - appveyor PushArtifact coverage.xml
+  - packages\coveralls.io\tools\coveralls.net.exe --opencover coverage.xml
 
 artifacts:
   - path: '*.nupkg'
   - path: '*.zip'
+  - path: coverage.xml
 
 nuget:
   account_feed: true
@@ -49,14 +54,14 @@ nuget:
 deploy:
   - provider: NuGet
     api_key:
-      secure: BIYmTD2m0YuxsKt7KwAOyQ==
-    skip_symbols: true
+      secure: qjlZn0/B+YjmKoxEEr6t9iMVbhGf+TkHxC/ujtR51SpTCsAbtXG8lqfhbEZ5kI1Q
+    skip_symbols: false
     on:
       APPVEYOR_REPO_TAG: true
 
   - provider: GitHub
     auth_token:
-      secure: BIYmTD2m0YuxsKt7KwAOyQ==
+      secure: ny+knEzukmOsGq1BvsBwcTg0mVD33xG/+pxCj/PImg+pWT427L6e0hbQd60K95GV
     tag: '$(APPVEYOR_REPO_TAG_NAME)'
     release: '$(GitVersion_NuGetVersion)'
     description: ''
