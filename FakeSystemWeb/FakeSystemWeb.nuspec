@@ -9,7 +9,6 @@
     <projectUrl>https://github.com/mergut/FakeSystemWeb</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
-    <copyright>$copyright$</copyright>
     <tags>Web HttpContext MVC Test Testing Unit Fake Mock</tags>
   </metadata>
 </package>
