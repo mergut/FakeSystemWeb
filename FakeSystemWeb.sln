@@ -10,6 +10,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8D89B1DB-47EE-496C-9148-804FA202697B}"
 	ProjectSection(SolutionItems) = preProject
 		default.licenseheader = default.licenseheader
+		README.md = README.md
 		Settings.StyleCop = Settings.StyleCop
 	EndProjectSection
 EndProject
